@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-package com.google.samples.propertyanimation
+package com.google.vanh.propertyanimation
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -77,8 +79,11 @@ class MainActivity : AppCompatActivity() {
         // rotate clockwise around z axis pointing outward
         val animator = ObjectAnimator.ofFloat(star, View.ROTATION,-360f,0f)
         animator.duration = 1000
+        animator.addListener(object:AnimatorListenerAdapter(){ //prevent jank enable/disable button
+            override fun onAnimationStart(animation: Animator?){rotateButton.isEnabled = false}
+            override fun onAnimationEnd(animation: Animator?) { rotateButton.isEnabled = true }
+        })
         animator.start()
-
     }
 
     private fun translater() {
