@@ -16,16 +16,18 @@
 
 package com.google.vanh.propertyanimation
 
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
-import android.animation.ObjectAnimator
-import android.animation.PropertyValuesHolder
+import android.animation.*
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
+import android.view.animation.AccelerateInterpolator
+import android.view.animation.LinearInterpolator
 import android.widget.Button
+import android.widget.FrameLayout
 import android.widget.ImageView
+import androidx.appcompat.widget.AppCompatImageView
 
 // Property animation is, simply, the changing of property values over time.
 
@@ -140,6 +142,53 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun shower() {
+        val container = star.parent as ViewGroup
+        val containerW = container.width
+        val containerH = container.height
+        var starW: Float = star.width.toFloat()
+        var starH: Float = star.height.toFloat()
+
+        // Because the star is a VectorDrawable asset, use an AppCompatImageView,
+        // which has the ability to host that kind of resource
+        val newStar = AppCompatImageView(this)
+        newStar.setImageResource(R.drawable.ic_star)
+        newStar.layoutParams = FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,
+                               FrameLayout.LayoutParams.WRAP_CONTENT)
+        container.addView(newStar)
+
+        // set size of the stars to random size .1 to 1.6 of default
+        // Use this scale factor to change the cached width/height values,
+        // because you will need to know the actual pixel height/width for later calculations.
+        newStar.scaleX = Math.random().toFloat() * 1.5f + .1f
+        newStar.scaleY = newStar.scaleX
+        starW *= newStar.scaleX
+        starH *= newStar.scaleY
+        // position the new star. Horizontally, it should appear randomly
+        // somewhere from the left edge to the right edge
+        newStar.translationX = Math.random().toFloat() * containerW - starW / 2
+
+        // use interpolation animation
+        // the rotation will use a smooth linear motion
+        // (moving at a constant rate over the entire rotation animation),
+        // while the falling animation will use an accelerating motion
+        // (simulating gravity pulling the star downward at a constantly faster rate).
+        val mover = ObjectAnimator.ofFloat(newStar, View.TRANSLATION_Y, -starH, containerH + starH)
+        mover.interpolator = AccelerateInterpolator(1f)
+        val rotator = ObjectAnimator.ofFloat(newStar, View.ROTATION, (Math.random() * 1080).toFloat())
+        rotator.interpolator = LinearInterpolator()
+
+        // animate together using AnimationSet which will animate the group .
+        // It can play animations in parallel here, or sequentially
+        // it support very complex hierarchical choreography with multiple sets
+        val set = AnimatorSet()
+        set.playTogether(mover, rotator)
+        set.duration = (Math.random() * 1500 + 500).toLong()
+        // once the star has fallen off the bottom of the screen,
+        // it should be removed from the container.
+        // Set a simple listener to wait for the end of the animation and remove it
+        set.addListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animation: Animator?) = container.removeView(newStar) })
+        set.start()
     }
 
     private fun ObjectAnimator.disAbleViewDuringAnimation(view:View){
