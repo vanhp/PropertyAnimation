@@ -106,6 +106,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun fader() {
+        // varying the alpha property which indicate the opacity of object
+        val animator = ObjectAnimator.ofFloat(star, View.ALPHA, 0f)
+        animator.repeatCount = 1
+        animator.repeatMode = ObjectAnimator.REVERSE
+        animator.disAbleViewDuringAnimation(fadeButton)
+        animator.start()
     }
 
     private fun colorizer() {
