@@ -19,6 +19,7 @@ package com.google.vanh.propertyanimation
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
+import android.animation.PropertyValuesHolder
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -89,10 +90,19 @@ class MainActivity : AppCompatActivity() {
         animator.repeatMode = ObjectAnimator.REVERSE
         animator.disAbleViewDuringAnimation(translateButton)
         animator.start()
-
     }
 
     private fun scaler() {
+        // must do both axises at the same time, only need to specify end value
+        // PropertyValuesHolder only hold the property and value
+        // information for the animation, not the target
+        val scaleX = PropertyValuesHolder.ofFloat(View.SCALE_X, 4f)
+        val scaleY = PropertyValuesHolder.ofFloat(View.SCALE_Y, 4f)
+        val animator = ObjectAnimator.ofPropertyValuesHolder(star, scaleX, scaleY)
+        animator.repeatCount = 1
+        animator.repeatMode = ObjectAnimator.REVERSE
+        animator.disAbleViewDuringAnimation(scaleButton)
+        animator.start()
     }
 
     private fun fader() {
