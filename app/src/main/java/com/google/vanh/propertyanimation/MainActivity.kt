@@ -64,7 +64,7 @@ class MainActivity : AppCompatActivity() {
 
         rotateButton.setOnClickListener{rotater()}
 
-        translateButton.setOnClickListener { translater() }
+        translateButton.setOnClickListener { translator() }
 
         scaleButton.setOnClickListener { scaler() }
 
@@ -79,14 +79,17 @@ class MainActivity : AppCompatActivity() {
         // rotate clockwise around z axis pointing outward
         val animator = ObjectAnimator.ofFloat(star, View.ROTATION,-360f,0f)
         animator.duration = 1000
-        animator.addListener(object:AnimatorListenerAdapter(){ //prevent jank enable/disable button
-            override fun onAnimationStart(animation: Animator?){rotateButton.isEnabled = false}
-            override fun onAnimationEnd(animation: Animator?) { rotateButton.isEnabled = true }
-        })
+        animator.disAbleViewDuringAnimation(rotateButton)
         animator.start()
     }
 
-    private fun translater() {
+    private fun translator() {
+        val animator = ObjectAnimator.ofFloat(star, View.TRANSLATION_X, 200f)
+        animator.repeatCount = 1
+        animator.repeatMode = ObjectAnimator.REVERSE
+        animator.disAbleViewDuringAnimation(translateButton)
+        animator.start()
+
     }
 
     private fun scaler() {
@@ -101,4 +104,10 @@ class MainActivity : AppCompatActivity() {
     private fun shower() {
     }
 
+    private fun ObjectAnimator.disAbleViewDuringAnimation(view:View){
+        addListener(object:AnimatorListenerAdapter(){
+            override fun onAnimationStart(animation: Animator?) { view.isEnabled = false }
+            override fun onAnimationEnd(animation: Animator?) { view.isEnabled = true }
+        })
+    }
 }
