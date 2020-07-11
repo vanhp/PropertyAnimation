@@ -20,6 +20,7 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
 import android.animation.PropertyValuesHolder
+import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -115,6 +116,27 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun colorizer() {
+        // animating a single property on an object that property isn’t
+        // an android.util.Property object (View.xxx),
+        // but is instead a property exposed via a setter
+        // by passing in the name of the property as a String.
+        // The name is then mapped internally to the appropriate
+        // setter/getter information on the target object.
+
+        // flashing due to interpreting raw int as color
+        //  var animator = ObjectAnimator.ofInt(star.parent,"backgroundColor",
+        //                 Color.BLACK, Color.RED).start()
+        // no flash since this use the actual color instead of int
+        // var animator = ObjectAnimator.ofArgb(star.parent,"backgroundColor",
+        //                Color.BLACK, Color.RED).start()
+
+         val animator = ObjectAnimator.ofArgb(star.parent,
+                            "backgroundColor", Color.BLACK, Color.RED)
+         animator.setDuration(500)
+         animator.repeatCount = 1
+         animator.repeatMode = ObjectAnimator.REVERSE
+         animator.disAbleViewDuringAnimation(colorizeButton)
+         animator.start()
     }
 
     private fun shower() {
